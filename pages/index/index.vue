@@ -1,6 +1,5 @@
 <template>
 	<view class="index">
-
 		<scroll-view class="navscroll" scroll-x>
 			<block v-for="(item,index) in navArr" :key="item.id">
 				<view class="row" :class="navIndex===index?'active':''" @click="clickNav(item.id)">
@@ -11,7 +10,7 @@
 
 		<view class="content">
 			<view class="item" v-for="item in listArr">
-				<newbox :item="item"></newbox>
+				<newbox :item="item" @click.native="clickDetail(item)"></newbox>
 
 			</view>
 
@@ -20,6 +19,11 @@
 				<view class="text">暂无数据</view>
 			</view>
 
+		</view>
+		
+		<view class="loadStyle" v-if="listArr.length">
+			<view class="text" v-if="loading==1">数据加载中...</view>
+			<view class="text" v-if="loading==2">没有更多了~~~</view>
 		</view>
 
 
@@ -41,9 +45,14 @@
 			this.getNav()
 			this.getData()
 		},
+		onReachBottom() {
+			this.loading=1;
+			this.currentPage++;
+			this.getData()
+		},
+		
 		methods: {
 			getNav() {
-
 				uni.request({
 					url: "https://ku.qingnian8.com/dataApi/news/navlist.php",
 					success: (res) => {
@@ -51,16 +60,22 @@
 					}
 				})
 			},
-			getData(classid = 50) {
+			clickDetail(event){
+				uni.navigateTo({
+					url:`/pages/detail/detail?cid=${event.classid}&id=${event.id}`
+				})
+			},
+			getData(cid = 50) {
 				uni.request({
 					url: "https://ku.qingnian8.com/dataApi/news/newslist.php",
 					data: {
-						cid: classid,
+						cid: cid,
 						page: this.currentPage
 					},
 					success: (res) => {
-						console.log("jinlai")
-						console.log("res", res);
+						if(res.data.length==0){
+							this.loading=2
+						}
 						this.listArr = [...this.listArr, ...res.data]
 					}
 				})
@@ -72,7 +87,7 @@
 				this.navIndex = index
 				this.currentPage = 1;
 				this.listArr = []
-				// this.loading=0
+				this.loading=0
 			 this.getData(id)
 			}
 		}
@@ -137,6 +152,17 @@
 				color: #999;
 				font-size: 20rpx;
 			}
+		}
+		
+	
+	}
+	
+	.loadStyle{
+		.text{
+			font-size: 28rpx;
+			color:#999;
+			text-align: center;
+			padding:20rpx 0;
 		}
 	}
 </style>
