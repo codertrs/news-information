@@ -55,7 +55,9 @@
 					if(index>=0){
 						historyArr.splice(index,1)
 					}
+					
 					historyArr.unshift(oneData)
+					//取前10条
 					historyArr=historyArr.slice(0,10);
 					uni.setStorageSync("historyArr",historyArr)
 					
