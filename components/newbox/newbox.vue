@@ -29,7 +29,7 @@
 				type: Object,
 				default: () => ({
 					title: "默认标题",
-					author: "咸虾米",
+					author: "trs",
 					hits: 999,
 					picurl: "../../static/images/nopic.jpg",
 					looktime: null

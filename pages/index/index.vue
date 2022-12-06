@@ -20,7 +20,7 @@
 			</view>
 
 		</view>
-		
+
 		<view class="loadStyle" v-if="listArr.length">
 			<view class="text" v-if="loading==1">数据加载中...</view>
 			<view class="text" v-if="loading==2">没有更多了~~~</view>
@@ -31,6 +31,10 @@
 </template>
 
 <script>
+	import {
+		navlist,
+		newslist
+	} from "../../service/index.js"
 	export default {
 		data() {
 			return {
@@ -46,38 +50,36 @@
 			this.getData()
 		},
 		onReachBottom() {
-			this.loading=1;
+			this.loading = 1;
 			this.currentPage++;
 			this.getData()
 		},
-		
+
 		methods: {
 			getNav() {
 				uni.request({
-					url: "https://ku.qingnian8.com/dataApi/news/navlist.php",
-					success: (res) => {
-						this.navArr = res.data
-					}
+					url: navlist,
+				}).then(res => {
+					this.navArr = res[1].data
 				})
 			},
-			clickDetail(event){
+			clickDetail(event) {
 				uni.navigateTo({
-					url:`/pages/detail/detail?cid=${event.classid}&id=${event.id}`
+					url: `/pages/detail/detail?cid=${event.classid}&id=${event.id}`
 				})
 			},
 			getData(cid = 50) {
 				uni.request({
-					url: "https://ku.qingnian8.com/dataApi/news/newslist.php",
+					url: newslist,
 					data: {
 						cid: cid,
 						page: this.currentPage
-					},
-					success: (res) => {
-						if(res.data.length==0){
-							this.loading=2
-						}
-						this.listArr = [...this.listArr, ...res.data]
 					}
+				}).then(res => {
+					if (res[1].data.length == 0) {
+						this.loading = 2
+					}
+					this.listArr = [...this.listArr, ...res[1].data]
 				})
 			},
 			clickNav(id) {
@@ -87,8 +89,8 @@
 				this.navIndex = index
 				this.currentPage = 1;
 				this.listArr = []
-				this.loading=0
-			 this.getData(id)
+				this.loading = 0
+				this.getData(id)
 			}
 		}
 	}
@@ -129,7 +131,7 @@
 	.content {
 		padding: 30rpx;
 		padding-top: 130rpx;
-		
+
 
 		.item {
 			padding: 20rpx 0;
@@ -153,16 +155,16 @@
 				font-size: 20rpx;
 			}
 		}
-		
-	
+
+
 	}
-	
-	.loadStyle{
-		.text{
+
+	.loadStyle {
+		.text {
 			font-size: 28rpx;
-			color:#999;
+			color: #999;
 			text-align: center;
-			padding:20rpx 0;
+			padding: 20rpx 0;
 		}
 	}
 </style>
